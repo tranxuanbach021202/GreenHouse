@@ -31,7 +31,6 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
-        logger.error("Test 1", "1");
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
 

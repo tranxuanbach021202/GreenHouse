@@ -18,6 +18,7 @@ import com.nimbusds.oauth2.sdk.SuccessResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -64,7 +66,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> registerUser(SignupRequest signupRequest) {
         if (userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
-            throw new AppException(400, 40, "Lỗi: User name này đã được đăng ký trước đó!");
+
+//            throw new AppException(400, 40, "Lỗi: User name này đã được đăng ký trước đó!");
+            return ResponseEntity
+                    .status(400)
+                    .body(new MessageResponse("Lỗi: Username này đã được đăng ký trước đó!"));
         }
 
         if (userRepository.findByUsername(signupRequest.getEmail()).isPresent()) {
@@ -98,9 +104,8 @@ public class AuthServiceImpl implements AuthService {
 
         // Tao otp
         String otp = generateOTP();
-        user.setPassword(passwordEncoder.encode(otp));
-        user.setOneTimePassword(otp);
-        user.setVerified(false);
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setOtp(otp);
 
 
         userRepository.save(user);
@@ -141,7 +146,37 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+    @Override
+    public ResponseEntity<?> verifyOtp(String email, String otp) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(404, 44,
+                        "Không tìm thấy tài khoản với email '" + email + "'!"));
+
+        // Check het han
+        logger.error("Unauthorized error2: {}", user.getOneTimePassword() + "a" + otp);
+        if (user.getOneTimePassword() == null || !user.getOneTimePassword().equals(otp)) {
+            throw new AppException(400, 3,
+                    "OTP '" + otp
+                            + "' của bạn đã hết hạn hoặc không tồn tại! Vui lòng tạo lại OTP!");
+        }
+
+        // Check  equals otp
+        if (user.getOtpExpiryTime() == null || LocalDateTime.now().isAfter(user.getOtpExpiryTime())) {
+            throw new AppException(401, 1,
+                    "Mã OTP không phải là '" + otp + "'!");
+        }
+
+        // OTP hop le
+        user.setVerified(true);
+        user.setOneTimePassword(null);
+        user.setOtpExpiryTime(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Xác thực OTP thành công!");
+
+    }
+
     private String generateOTP() {
-        return String.format("%06d", new Random().nextInt(999999));
+        return String.format("%04d", new Random().nextInt(9999));
     }
 }

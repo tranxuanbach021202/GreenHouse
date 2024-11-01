@@ -17,7 +17,6 @@ public class ConfigCtrl implements Filter {
         final HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE, PATCH");
         response.setHeader("Access-Control-Allow-Headers", "*");
-        response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         if ("OPTIONS".equalsIgnoreCase(((HttpServletRequest) req).getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);

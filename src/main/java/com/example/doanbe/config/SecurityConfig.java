@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,10 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig{
-
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig {
     @Autowired
-    UserDetailsServiceImpl userService;
+    UserDetailsServiceImpl userDetailsService;
+
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
@@ -36,7 +38,7 @@ public class SecurityConfig{
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userService);
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
@@ -69,5 +71,8 @@ public class SecurityConfig{
 
         return http.build();
     }
-
 }
+
+
+
+

@@ -48,9 +48,21 @@ public class User {
     private boolean isVerified = false;
     private LocalDateTime otpExpiryTime;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade =  CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
+
+    public void setOtp(String otp) {
+        this.oneTimePassword = otp;
+
+        // Set time otp
+        this.otpExpiryTime = LocalDateTime.now().plusMinutes(10);
+    }
+
+    public boolean isOtpValid(String otp) {
+        return otp.equals(this.oneTimePassword) && LocalDateTime.now().isBefore(this.otpExpiryTime);
+    }
+
 
 
     public User(String username, String email, String password) {

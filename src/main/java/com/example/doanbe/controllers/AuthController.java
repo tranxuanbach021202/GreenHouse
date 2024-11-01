@@ -1,10 +1,12 @@
 package com.example.doanbe.controllers;
 
 import com.example.doanbe.payload.request.LoginRequest;
+import com.example.doanbe.payload.request.OtpRequest;
 import com.example.doanbe.payload.request.SignupRequest;
 import com.example.doanbe.security.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +31,11 @@ public class AuthController {
         return authService.authenticateUser(loginRequest);
     }
 
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody OtpRequest otpRequest) {
+        return authService.verifyOtp(otpRequest.getEmail(), otpRequest.getOtp());
+    }
 
 
 
