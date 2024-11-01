@@ -51,7 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Signup successful!')),
         );
-        // Chuyển hướng đến màn hình tiếp theo
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -60,15 +60,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
       }
     } catch (e) {
-      // Hiển thị lỗi
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
     }
   }
 
-  void someFunction() {// Log cấp độ warning
-    logger.e("This is an error log message.");      // Log cấp độ error
+  void someFunction() {
+    logger.e("This is an error log message.");
   }
 
   @override
@@ -81,7 +80,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // forgot password
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -111,8 +109,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-
-              // title
               Text(
                 "Enter your details below to create an account.",
                 style: TextStyle(
@@ -196,7 +192,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 20),
 
-              // check tuan thu dieu khoan
               Row(
                 children: [
                   Checkbox(
