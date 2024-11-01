@@ -1,14 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:greenhouse/resources/color.dart';
+import 'package:greenhouse/viewmodels/login_viewmodel.dart';
+import 'package:greenhouse/views/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _viewModel = LoginViewModel();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final response = await _viewModel.login(
+          _emailController.text,
+          _passwordController.text,
+        );
+
+        if (mounted) {
+          // Hiển thị thông báo thành công
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login successful')),
+          );
+
+          // Điều hướng đến màn hình chính
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login failed: ${e.toString()}')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 40),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: TextStyle(
@@ -75,6 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 20),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -117,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(6.0),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: _handleLogin,
                 child: Text(
                   "SIGN IN",
                   style: TextStyle(

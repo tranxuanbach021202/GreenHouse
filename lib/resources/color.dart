@@ -12,6 +12,7 @@ class AppColor {
   static const Color antiFlashWhite = Color(0xFFECF0F7);
   static const Color linen = Color(0xFFFBEDEB);
   static const Color skyBlue = Color(0xFF4EE2FF);
+  static const Color bubBles = Color(0xFFE4FAFC);
 }
 
 // class Gradients {
